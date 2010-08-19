@@ -1,4 +1,9 @@
+# Credit for some of this code goes to Liam Kaufman, who created pyItunes
+# http://www.liamkaufman.com/post/pyitunes__a_python_itunes_library_parser
+# I added code to do all parsing beyond getting the songs
+
 import re
+
 class XMLLibraryParser:
     def __init__(self,xmlLibrary):
         f = open(xmlLibrary)
@@ -64,7 +69,8 @@ class XMLLibraryParser:
                     key,restOfLine = self.keyAndRestOfLine(line)
                     temp2.append(self.getValue(restOfLine))
         return songs, playlists
-    
+
+    # TODO: this function really needs some work to take out the hardcoded dictionary
     def getAlbumsAndArtists(self):
         tempAlbums = {}
         artists = {}

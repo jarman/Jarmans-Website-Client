@@ -1,4 +1,4 @@
-import web, urllib2, time
+import web, urllib2, time, os
 from threading import Timer
 #from MusicLibraryFunctions import *
 from XMLLibraryParser import *
@@ -39,6 +39,7 @@ libraryLocation = "\users\jarman\Music\MacBook iTunes\iTunes Music Library.xml"
 serverUrl = 'http://www.jarmanrogers.com/'
 
 lib = XMLLibraryParser(libraryLocation)
+libLastModified = os.path.getmtime(libraryLocation)
 
 def getPlaylistContents(plid):    
     songs = [];
@@ -129,13 +130,16 @@ class load:
         return('finished!');
 
 def loadLibrary():
-    global lib
-    print("reloading Library");
-    lib = None
-    lib = XMLLibraryParser(libraryLocation)
-    app = web.application(urls, globals())
-    app.run();
-    print("loaded library")
+    global lib, libLastModified
+    newTime = os.path.getmtime(libraryLocation)
+    if (newTime > libLastModified):
+        print("reloading Library");
+        libLastModified = newTime
+        lib = XMLLibraryParser(libraryLocation)
+        app = web.application(urls, globals())
+        print("loaded library")
+    else:
+        print("library was unmodified")
 
 def pingServer():
     fullUrl = serverUrl + "register?name=" + clientName
@@ -147,7 +151,14 @@ def pingServer():
         fullUrl += "&user=" + allowedUser
     urllib2.urlopen(fullUrl)
 
+def update():
+    loadLibrary()
+    pingServer()
+    Timer(900, update, ()).start()
+
 # function to run the server
 if __name__ == "__main__":
     pingServer();
+    #check to see if the library needs to be reloaded in 15 mins
+    Timer(900, update, ()).start()
     app.run()
