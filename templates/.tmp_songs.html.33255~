@@ -1,0 +1,7 @@
+$def with (songs, title)
+
+<html>
+<h2>$title</h2>
+$for name in songs:
+	<p><a class='songLink' onclick='playSong($loop.index0)' href="$name[0]">$loop.index. $name[1] - $name[2]</a></p>
+</html>				

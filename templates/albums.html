@@ -1,0 +1,17 @@
+$def with (name, albums)
+
+<html>
+<h2>$name</h2>
+<ul id='allPlaylists'>
+$ items = albums.items();
+$ items.sort()
+$for folder, folderContents in items:
+	<li class='folder'><a onclick="return openFolder(event, '$folder')" href='blah.html'>$folder</a></li>
+	<div class='folderContents' id='$folder'>
+		<ul>
+		$for pl in folderContents:
+			<li class='playlist'><a onClick='return getContent(event, "$name", "$pl")' href="music.html?$name=$pl">$pl</a></li>
+		</ul>
+	</div>
+</ul>
+</html>

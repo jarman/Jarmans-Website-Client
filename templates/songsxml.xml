@@ -1,0 +1,10 @@
+$def with (songs, title)
+
+<songs>
+<title>$title</title>
+<song>
+$for name in songs:
+	<url>$name[0]</url>
+	<name>$loop.index. $name[1] - $name[2]</name>
+</song>
+</songs>				

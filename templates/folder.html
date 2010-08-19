@@ -1,0 +1,13 @@
+$def with (folders, playlists, render)
+
+<html>
+$for folder in folders:
+	<li class="folder"><a onclick="return openFolder(event, '$folder[1]')" href='blah.html'>$folder[0]</a></li>
+	<div class='folderContents' id='$folder[1]'>
+		<ul>
+		$:render.folder(folder[3], folder[4], render)
+		</ul>
+	</div>
+$for pl in playlists:
+	<li class="playlist"><a onClick='return getContent(event, "Playlist", "$pl[1]")' href="music.html?Playlist=$pl[1]">$pl[0]</a></li>
+</html>

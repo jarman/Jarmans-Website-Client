@@ -1,0 +1,22 @@
+How to run the client:
+
+You'll need to update the client.py file global variables with some of your info. To get the basics working here's what i'd suggest:
+
+musicBaseUrl # you'll need an address from dyndns for this to work
+clientName # whatever you'd like according to restrictions in the comments
+clientAddress = ""  # this will autoconfigure on the server
+allowedUser = ""  # this will allow anyone. you can set this to your full gmail address if you'd like to password protect your library libraryLocation 
+
+Then open up a terminal and cd to the directory of client.py and run (in OSX/linux)
+> python client.py 80
+or in windows:
+> client.py 80
+
+Then open up another terminal and cd to the location of your itunes music. I'm hoping/assuming that you have it all consolidating and are allowing itunes to organize it. Anyways, it'll be in a folder like "iTunes Music" under that same directory as the xml file. once there run (again in osx/linux)
+> python -m SimpleHTTPServer 81
+
+Both of those commands should say something like "http://0.0.0.0:80/" and just kind of hang out there. If it's throwing errors we'll have to debug them. 
+
+once that's working you should be able to go to "http://localhost/playlists" and see all of your playlists. also on jarmanrogers.com/music you should see your name in the list of libraries.
+
+There are some complexities of firewalls which you'll have to disable for ports 80 and 81 if you have a router. Once these are bypassed, music should be able to stream from jarmanrogers.com

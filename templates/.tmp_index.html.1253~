@@ -1,0 +1,135 @@
+$def with (name, playlists, songs, title='.Recently Added')
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<!--[if IE]><script type="text/javascript" src="static/excanvas.js"></script><![endif]--> 
+	<!--[if IE]><script defer type="text/javascript" src="static/ieShadow.js"></script><![endif]-->
+	<link rel="stylesheet" type="text/css" href="static/main.css">
+	<title>jarman rogers</title>
+</head>
+<body onload="main();">		
+	<div id='center'> <!--onMouseMove='changeTime(event)' onMouseUp='setMouseUp(event);'>-->
+		<h1><a href='index.html'>jarman rogers</a></h1>
+		$if name == 'projects.html':
+			<div id="topMenu">
+				<a class='tab' href="index.html">HOME</a>
+				<a id='curTab' href="projects.html">PROJECTS</a>
+				<a class='tab' href="music.html">Music</a>
+				<a class='tab' href="about.html">ABOUT</a>
+			</div>
+			<div id='content'>
+				<h2>Projects</h2>
+				<a href='random_circles.html'>Random Circles:</a>
+				<span id="desc"> Generates randomly placed circles on a canvas</span>		
+			</div>
+		$elif name == 'random_circles.html':
+			<div id="topMenu">
+				<a class='tab' href="index.html">HOME</a>
+				<a id='curTab' href="projects.html">PROJECTS</a>
+				<a class='tab' href="music.html">Music</a>
+				<a class='tab' href="about.html">ABOUT</a>
+			</div>
+			<div id='content'>
+				<h2>Random circles</h2>
+				A demo I made of the HTML5 canvas capabilities. It simply creates a bunch of circles with a random number generator. 	
+				<canvas id="canvas" height="400" width="800">This text is displayed if your browser does not support HTML5 Canvas.</canvas>
+				<script type="text/javascript" src="static/gEngine.js"></script>	
+			</div>
+		$elif name =='about.html':
+			<div id="topMenu">
+				<a class='tab' href="index.html">HOME</a>
+				<a class='tab' href="projects.html">PROJECTS</a>
+				<a class='tab' href="music.html">Music</a>
+				<a id='curTab' href="about.html">ABOUT</a>
+			</div>
+			<div id='content'>
+				<div id='main'style='float:left'>
+					<h2>About Me</h2>
+					<p>I'm a software engineer currently living in Seattle, WA.</p>		
+					<h2>About the Website</h2>
+					<p>The website was created to test the emerging standards of web development. Technologies such as HTML5 and CSS3 were employed. The backend uses a python framework called web.py.</p>
+				</div>
+				<div id='sidebar' style='float:right'>
+					<h2>Contact Me</h2>
+					<p>You probably already know how if you found this site.</p>
+				</div>
+			</div>
+		$elif name =='music.html':
+			<div id="topMenu">
+				<a class='tab' href="index.html">HOME</a>
+				<a class='tab' href="projects.html">PROJECTS</a>
+				<a id='curTab' href="music.html">Music</a>
+				<a class='tab' href="about.html">ABOUT</a>
+			</div>
+			<div id='mPlayer'>
+				<audio id='mPlayerObj' src='$songs[0][0]'></audio>
+				<a href='#' onclick='playSong();' class='mpButton' id='play'><canvas id='playCanvas' height='12' width='10'>play</canvas></a>
+				<a href='#' onclick='prevSong()' class='mpButton' id='prev'><canvas id='prevCanvas' height='10' width='15'>prev</canvas></a>
+				<a href='#' onclick='seekBackward()' class='mpButton' id='backward'><canvas id='backCanvas' height='10' width='15'>seek backward</canvas></a>
+				<a href='#' onclick='seekForward()' class='mpButton' id='forward'><canvas id='forwCanvas' height='10' width='15'>seek forward</canvas></a>
+				<a href='#' onclick='nextSong()' class='mpButton' id='next'><canvas id='nextCanvas' height='10' width='15'>next</canvas></a>
+				<a href='#' onclick='toggleRepeat()' class='mpButton' id='repeat'><canvas id='repeatCanvas' height='12' width='17'>repeat</canvas></a>
+				<a href='#' onclick='toggleShuffle()' class='mpButton' id='shuffle'><canvas id='shuffleCanvas' height='12' width='20'>repeat</canvas></a>
+				|<div id='songTime'></div>|<div id='songInfo'></div>
+				<script type="text/javascript" src="static/mPlayerControls.js"></script>
+				<!--<script type="text/javascript" src="static/jquery.jplayer.js"></script>-->
+			</div>
+			<a  id='progressBar' onMouseDown='setMouseDown(event)' href='#'><div id='time'>0:00</div></a>
+			<div id='content'>
+				<div id ='sidebar' style='float:left;width:150px'>
+					<input type='text' id='searchBox' class='textBox' onKeyUp='search(event)'/>
+					<h2>Playlists</h2>
+					<ul>
+					$for folder in playlists:
+						<li><a onclick="return openFolder(event, '$folder[1]')" href='blah.html'>$folder[0]</a></li>
+						<div class='folder' id='$folder[1]'>
+							<ul>
+							$for pl in folder[2]:
+								$if (title == pl[0]):
+									<li id='curPl'><a onClick='return getContent(event, "$pl[1]")' href="music.html?pl=$pl[1]">$pl[0]</a></li> 
+								$else:
+									<li><a onClick='return getContent(event, "$pl[1]")' href="music.html?pl=$pl[1]">$pl[0]</a></li>
+							</ul>
+						</div>
+					</ul>
+					<button type='button' id='reloadButton' onclick='return(reloadLibrary())'>Reload Library</button>
+				</div>
+				<div id='main' style='float:right;width:600px;''>
+					<h2>$title</h2>
+					$for name in songs:
+						<p><a onclick='playSong($loop.index0)' href="$name[0]">$loop.index. $name[1] - $name[2]</a></p>
+				</div>
+			</div>
+		$else:
+			<div id="topMenu">
+				<a id='curTab' href="index.html">HOME</a>
+				<a class='tab' href="projects.html">PROJECTS</a>
+				<a class='tab' href="music.html">Music</a>
+				<a class='tab' href="about.html">ABOUT</a>
+			</div>
+			<div id='content'>
+				<div id="main" style='float:left'>
+						<h2>Welcome</h2>
+						<p>This website is a repository for things i'm working on. Have a look around and let me know what you think.</p>
+						<p>Also, the media player currently works in Chrome and Safari, those two being the only browsers supporting
+						the HTML5 audio tag with MP3 support (Firefox supports only OGG and IE doesn't support the tag). I'm working on a flash fallback.</p>
+				</div>
+				<div id='sidebar' style='float:right'>
+					<h2>Recent Music</h2>
+					<ul>
+					$for name in songs:
+						<li><a href="music.html">$name[1] - $name[2]</a></li>
+					</ul>				
+				</div>			
+			</div>
+		<div id='footer'>
+			design by jarman rogers 
+		</div>
+	</div>
+	<!--[if IE]>
+	<div id='ieShadow'>
+	</div>
+	<![endif]-->
+</body>
+</html>
