@@ -47,10 +47,13 @@ libLastModified = os.path.getmtime(libraryLocation)
 def getPlaylistContents(plid):    
     songs = [];
     for id in lib.playlists[plid]['songs']:
-        if (lib.songs[id]['Kind'] != 'Apple Lossless audio file'):
+		# Don't show files which are apple lossless or songs which are only on iCloud (they don't have a location on disk)
+        if (lib.songs[id]['Kind'] != 'Apple Lossless audio file' and lib.songs[id].get('Location', None) != None):
+			# grab the local location and create a new network location based on the user's URL
             localLoc = lib.songs[id]['Location']
             localFolder = localLoc[localLoc.find('iTunes%20Music/')+15:]
             networkLoc = musicBaseUrl + localFolder
+			# add this network location to the dictionary for the song
             songs.append([networkLoc,lib.songs[id]])
     return songs, lib.playlists[plid]['Name']
 
