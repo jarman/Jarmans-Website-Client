@@ -9,5 +9,5 @@ $for folder in folders:
 		</ul>
 	</div>
 $for pl in playlists:
-	<li class="playlist"><a onClick='return getContent(event, "Playlist", "$pl[1]")' href="songs.html?Playlist=$pl[1]">$pl[0]</a></li>
+	<li class="playlist"><a onClick='return getContent(event, "Playlist", "$pl[1]")' href="music.html?Playlist=$pl[1]">$pl[0]</a></li>
 </html>

@@ -8,7 +8,7 @@ $for title in titles
 	<h2>$title</h2>
 		<ul>
 		$for name in songs[loop.index0]:
-			<li><a class='songLink' onclick='return playSong($i, event)' href="$name[0]">$loop.index. $name[1] - $name[2]</a></li>
+			<li><a class='songLink' onclick='return playSong($i, $name[1].get("Start Time", 0), event)' href="$name[0]">$loop.index. $name[1].get('Artist') - $name[1].get('Name')</a></li>
 			$ i += 1;
 		</ul>
 </html>				

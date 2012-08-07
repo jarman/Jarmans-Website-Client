@@ -1,0 +1,8 @@
+$def with (folders, playlists, render)
+
+<html>
+<h2>Playlists</h2>
+<ul id='allPlaylists'>
+$:render.folder(folders, playlists, render)
+</ul>
+</html>

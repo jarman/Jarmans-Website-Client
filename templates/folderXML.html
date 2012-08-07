@@ -1,0 +1,14 @@
+$def with (folders, playlists, render)
+$for folder in folders:
+	<folder>
+		<id>$folder[1]</id>
+		<name>$folder[0]</name>
+	<contents>
+			$:render.folderXML(folder[3], folder[4], render)
+	</contents>
+	</folder>
+$for pl in playlists:
+	<playlist>
+		<id>$pl[1]</id>
+		<name>$pl[0]</name>
+	</playlist>

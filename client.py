@@ -3,6 +3,31 @@ from threading import Timer
 #from MusicLibraryFunctions import *
 from XMLLibraryParser import *
 
+# ------------------------------ Here be variables you need to set --------------------------------------
+
+# Base server address where the "iTunes Music" folder is shared
+musicBaseUrl = "http://jarman.homedns.org:82/"
+
+# the name of the client server as displayed in the selection menu
+# currently this name cannot contain spaces, and possibly non-alphanumeric characters
+clientName = "Jarman"
+
+# The current servers DNS name, or the empty string if it does not exist. Do not preface with http://
+# examples: "testdomain.com", "" 
+clientAddress = ""
+
+# The email address (gmail account) which is allowed to use the account. Empty string to allow everyone. 
+# examples: "joe@gmail.com", "" 
+allowedUser = "jarman@gmail.com"
+
+# Location of the XML file for iTunes
+libraryLocation = "\users\jarman\Music\MacBook iTunes\iTunes Library.xml"
+#libraryLocation = "/Users/Jarman/Music/iTunes/iTunes Library.xml"
+
+# The address of the main server
+# This should remain the same
+serverUrl = 'http://www.jarmanrogers.com/'
+
 urls = (
     '/songs(.*)', 'songs',
     '/artists(.*)', 'artists',
@@ -15,29 +40,7 @@ render = web.template.render('templates/')
 
 app = web.application(urls, globals())
 
-# Base server address where the "iTunes Music" folder is shared
-musicBaseUrl = "http://jarman.homedns.org:82/"
-
-# the name of the client server as displayed in the selection menu
-# currently this name cannot contain spaces, and possibly non-alphanumeric characters
-clientName = "Jarman"
-
-# The current servers DNS name, or the empty string if it does not exist. Do not preface with http://
-# examples: "testdomain.com", "" 
-clientAddress = "jarman.homedns.org"
-
-# The email address (gmail account) which is allowed to use the account. Empty string to allow everyone. 
-# examples: "joe@gmail.com", "" 
-allowedUser = "jarman@gmail.com"
-
-# Location of the XML file for iTunes
-libraryLocation = "\users\jarman\Music\MacBook iTunes\iTunes Music Library.xml"
-#libraryLocation = "/Users/Jarman/Music/iTunes/iTunes Music Library.xml"
-
-# The address of the main server
-# This should remain the same
-serverUrl = 'http://www.jarmanrogers.com/'
-
+# load the library and set the initial 
 lib = XMLLibraryParser(libraryLocation)
 libLastModified = os.path.getmtime(libraryLocation)
 
@@ -48,7 +51,7 @@ def getPlaylistContents(plid):
             localLoc = lib.songs[id]['Location']
             localFolder = localLoc[localLoc.find('iTunes%20Music/')+15:]
             networkLoc = musicBaseUrl + localFolder
-            songs.append([networkLoc,lib.songs[id]['Artist'],lib.songs[id]['Name']])
+            songs.append([networkLoc,lib.songs[id]])
     return songs, lib.playlists[plid]['Name']
 
 def getArtistSongs(artist):    
@@ -58,7 +61,7 @@ def getArtistSongs(artist):
         localLoc = lib.songs[id]['Location']
         localFolder = localLoc[localLoc.find('iTunes%20Music/')+15:]
         networkLoc = musicBaseUrl + localFolder
-        songs.append([networkLoc,lib.songs[id]['Artist'],lib.songs[id]['Name']])
+        songs.append([networkLoc,lib.songs[id]])
     
     return songs
 
@@ -68,7 +71,7 @@ def getAlbumSongs(album):
         localLoc = lib.songs[id]['Location']
         localFolder = localLoc[localLoc.find('iTunes%20Music/')+15:]
         networkLoc = musicBaseUrl + localFolder
-        songs.append([networkLoc,lib.songs[id]['Artist'],lib.songs[id]['Name']])
+        songs.append([networkLoc,lib.songs[id]])
        
     return songs
 
@@ -84,7 +87,7 @@ def findSongs(s):
                 localLoc = attributes.get('Location')
                 localFolder = localLoc[localLoc.find('iTunes%20Music/')+15:]
                 networkLoc = "http://jarman.homedns.org:82/" + localFolder
-                songs[i].append([networkLoc,attributes.get('Artist'),attributes.get('Name')])
+                songs[i].append([networkLoc, attributes])
     return songs, cats
 
 #------------------------------------------------------------------------------------------------
@@ -94,7 +97,7 @@ class songs:
         web.header('Content-Type', 'text/xml')
         if web.input(Playlist='null').Playlist != 'null':
             songs, plName = getPlaylistContents(web.input().Playlist)
-            if name == 'xml':
+            if name == '.xml':
                 return render.songsxml(songs, plName)
             else:
                 return render.songs(songs, plName);
@@ -122,7 +125,10 @@ class albums:
 
 class playlists:
     def GET(self, name):
-        return render.playlists(lib.folders, lib.sortedPlaylists, render);
+		if (name == '.xml'):
+			return render.playlistsXML(lib.folders, lib.sortedPlaylists, render);
+		else:
+			return render.playlists(lib.folders, lib.sortedPlaylists, render);
 
 class load:
     def GET(self):
@@ -130,16 +136,14 @@ class load:
         return('finished!');
 
 def loadLibrary():
-    global lib, libLastModified
+    global lib, libLastModified, app, urls, globals
     newTime = os.path.getmtime(libraryLocation)
-    if (newTime > libLastModified):
+    if (newTime != libLastModified):
         print("reloading Library");
         libLastModified = newTime
         lib = XMLLibraryParser(libraryLocation)
-        app = web.application(urls, globals())
+        app = web.application(urls, globals());
         print("loaded library")
-    else:
-        print("library was unmodified")
 
 def pingServer():
     fullUrl = serverUrl + "register?name=" + clientName
@@ -149,7 +153,10 @@ def pingServer():
         fullUrl += "&url=" + clientAddress
     if (allowedUser != "" and allowedUser != None):
         fullUrl += "&user=" + allowedUser
-    urllib2.urlopen(fullUrl)
+    try:
+        urllib2.urlopen(fullUrl);
+    except urllib2.URLError, e:
+        print "The server was unavailable";
 
 def update():
     loadLibrary()

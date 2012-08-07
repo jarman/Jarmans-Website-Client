@@ -103,11 +103,12 @@ class XMLLibraryParser:
 
         artistNames = { 'A':[], 'B':[], 'C':[], 'D':[], 'E':[], 'F':[], 'G':[], 'H':[], 'I':[], 'J':[], 'K':[], 'L':[], 'M':[], 'N':[], 'O':[], 'P':[], 'Q':[], 'R':[], 'S':[], 'T':[], 'U':[], 'V':[], 'W':[], 'X':[], 'Y':[], 'Z':[], '#':[]} 
         for artist, songs in artists.iteritems():
-            if ((artist >= 'A' and artist <= 'Z') or (artist >= 'a' and artist <= 'z')):
-                s = artist[0].encode('latin-1').upper();
-                artistNames[s].append(artist);
-            else:
-                artistNames['#'].append(artist);
+            if (artist):
+                if ((artist[0] >= 'A' and artist[0] <= 'Z') or (artist[0] >= 'a' and artist[0] <= 'z')):
+                    s = artist[0].encode('latin-1').upper();
+                    artistNames[s].append(artist);
+                else:
+                    artistNames['#'].append(artist);
         for letter, names in artistNames.iteritems():
             artistNames[letter] = sorted(names)
 
